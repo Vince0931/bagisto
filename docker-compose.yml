@@ -4,22 +4,22 @@ services:
 
   mysql:
     image: mysql:5.7
-    container_name: webid-mysql
+    container_name: ecom-mysql
     working_dir: /application
     volumes:
       - .:/application
-      - db_data_webid2:/var/lib/mysql
+      - db_data_ecom:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: webid
-      MYSQL_USER: webid_user
+      MYSQL_DATABASE: ecom
+      MYSQL_USER: ecom_user
       MYSQL_PASSWORD: secret
     ports:
       - "8009:3306"
 
   webserver:
     image: nginx:alpine
-    container_name: webid-webserver
+    container_name: ecom-webserver
     working_dir: /application
     volumes:
       - .:/application
@@ -29,7 +29,7 @@ services:
 
   php-fpm:
     build: phpdocker/php-fpm
-    container_name: webid-php-fpm
+    container_name: ecom-php-fpm
     working_dir: /application
     volumes:
       - .:/application
@@ -37,4 +37,4 @@ services:
 
 
 volumes:
-  db_data_webid2: {}
+  db_data_ecom: {}
