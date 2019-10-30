@@ -1,4 +1,4 @@
-service: webid-lambda
+service: ecomm-lambda
 
 provider:
   name: aws
@@ -11,7 +11,7 @@ provider:
       - subnet-0796eb32ebc964aab
   environment:
     APP_ENV: production
-    APP_URL: https://lambda.web-id.fr/
+    #APP_URL: https://lambda.web-id.fr/
     VIEW_COMPILED_PATH: /tmp/storage/framework/views
     LOG_CHANNEL: stderr
     SESSION_DRIVER: cookie
@@ -19,7 +19,7 @@ provider:
     FILESYSTEM_PUBLIC: s3
     DB_CONNECTION: mysql
     DB_HOST: preproduction.c8fzfidnwmue.eu-west-3.rds.amazonaws.com
-    DB_DATABASE: ${ssm:/webid-lambda/db-database}
+    DB_DATABASE: webid2
     DB_USERNAME: ${ssm:/webid-lambda/db-username}
     DB_PASSWORD: ${ssm:/webid-lambda/db-password}
     AWS_BUCKET:
@@ -46,12 +46,9 @@ package:
     - storage/**
     - tests/**
     - phpdocker/**
-    - public/css
-    - public/js
-    - public/favicons
-    - public/fonts
-    - public/images
-    - public/img
+    - public/installer/**
+    - public/themes/**
+    - vendor/**
     #- public/vendor/**
 
 plugins:
@@ -101,7 +98,7 @@ resources:
     Assets:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: assets.web-id.fr
+        BucketName: assets.bagisto.com
         CorsConfiguration:
           CorsRules:
             - AllowedHeaders: ["*"]
@@ -135,9 +132,9 @@ resources:
               OriginPath: '/dev'
               CustomOriginConfig:
                 OriginProtocolPolicy: 'https-only' # API Gateway only supports HTTPS
-              OriginCustomHeaders:
-                - HeaderName: 'X-Forwarded-Host'
-                  HeaderValue: 'lambda.web-id.fr'
+              #OriginCustomHeaders:
+              #  - HeaderName: 'X-Forwarded-Host'
+              #    HeaderValue: 'lambda.web-id.fr'
             # The assets (S3)
             - Id: Assets
               # Use s3-website URLs instead if you host a static website (https://stackoverflow.com/questions/15309113/amazon-cloudfront-doesnt-respect-my-s3-website-buckets-index-html-rules#15528757)
@@ -166,7 +163,7 @@ resources:
             ViewerProtocolPolicy: redirect-to-https
           CacheBehaviors:
             # Css will be served under the `/css/` prefix
-            - PathPattern: '/css/*'
+            - PathPattern: '/themes/*'
               TargetOriginId: Assets # the static files on S3
               AllowedMethods: [GET, HEAD]
               ForwardedValues:
@@ -176,47 +173,7 @@ resources:
               ViewerProtocolPolicy: redirect-to-https
               Compress: true
             # js will be served under the `/js/` prefix
-            - PathPattern: '/js/*'
-              TargetOriginId: Assets # the static files on S3
-              AllowedMethods: [GET, HEAD]
-              ForwardedValues:
-                QueryString: 'false'
-                Cookies:
-                  Forward: none
-              ViewerProtocolPolicy: redirect-to-https
-              Compress: true
-            # favicons will be served under the `/favicons/` prefix
-            - PathPattern: '/favicons/*'
-              TargetOriginId: Assets # the static files on S3
-              AllowedMethods: [GET, HEAD]
-              ForwardedValues:
-                QueryString: 'false'
-                Cookies:
-                  Forward: none
-              ViewerProtocolPolicy: redirect-to-https
-              Compress: true
-            # fonts will be served under the `/fonts/` prefix
-            - PathPattern: '/fonts/*'
-              TargetOriginId: Assets # the static files on S3
-              AllowedMethods: [GET, HEAD]
-              ForwardedValues:
-                QueryString: 'false'
-                Cookies:
-                  Forward: none
-              ViewerProtocolPolicy: redirect-to-https
-              Compress: true
-            # images will be served under the `/images/` prefix
-            - PathPattern: '/images/*'
-              TargetOriginId: Assets # the static files on S3
-              AllowedMethods: [GET, HEAD]
-              ForwardedValues:
-                QueryString: 'false'
-                Cookies:
-                  Forward: none
-              ViewerProtocolPolicy: redirect-to-https
-              Compress: true
-            # img will be served under the `/img/` prefix
-            - PathPattern: '/img/*'
+            - PathPattern: '/installer/*'
               TargetOriginId: Assets # the static files on S3
               AllowedMethods: [GET, HEAD]
               ForwardedValues:
@@ -243,11 +200,11 @@ resources:
               ErrorCachingMinTTL: 0
 
           # Custom domain name
-          Aliases:
-            - lambda.web-id.fr # e.g. example.com
-          ViewerCertificate:
-            # ARN of the certificate created in ACM
-            AcmCertificateArn: arn:aws:acm:us-east-1:873034288588:certificate/b7c18156-0a3a-4241-b417-e79afd8ba108
-            # See https://docs.aws.amazon.com/fr_fr/cloudfront/latest/APIReference/API_ViewerCertificate.html
-            SslSupportMethod: 'sni-only'
-            MinimumProtocolVersion: TLSv1.1_2016
+          #Aliases:
+          #  - lambda.web-id.fr # e.g. example.com
+          #ViewerCertificate:
+          #  # ARN of the certificate created in ACM
+          #  AcmCertificateArn: arn:aws:acm:us-east-1:873034288588:certificate/b7c18156-0a3a-4241-b417-e79afd8ba108
+          #  # See https://docs.aws.amazon.com/fr_fr/cloudfront/latest/APIReference/API_ViewerCertificate.html
+          #  SslSupportMethod: 'sni-only'
+          #  MinimumProtocolVersion: TLSv1.1_2016

@@ -17,6 +17,9 @@ composer u
 #optimise for deploy
 composer install --optimize-autoloader --no-dev
 
+
+npm install serverless-pseudo-parameters
+
 # link nova media
 php artisan storage:link
 
